@@ -1,0 +1,20 @@
+---
+- hosts: all
+  connection: local
+  tasks:
+    - name: get config
+      telnet:
+        user: "{{ ios_username }}"
+        password: "{{ ios_password }}"
+        login_prompt: "Username: "
+        prompts:
+          - ">|#"
+        command:
+          - terminal length 0
+          - show running-config
+      register: running_config
+
+    - name: save config to file
+      copy:
+        content: "{{ running_config.output }}"
+        dest: "./{{ inventory_hostname }}.txt"
